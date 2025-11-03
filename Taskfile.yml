@@ -20,8 +20,6 @@ tasks:
     silent: true
     vars:
       profile: "{{index .MATCH 0}}"
-    deps:
-      - setup
     cmds:
       - |
         case "{{.profile}}" in
