@@ -1,4 +1,37 @@
-http://127.0.0.1:3000/ - open-webui
+# ailab
+
+ailab is a local open source AI stack. It features automation, local LLM inference, web UI for chat, workflow orchestration, and interactive coding.
+
+## Containers and Services
+
+- [Ollama](https://github.com/ollama/ollama): runs and manages LLMs (API: http://127.0.0.1:11434, UI proxy: http://127.0.0.1:8888)
+- [Open WebUI](https://github.com/open-webui/open-webui): web interface for Ollama, available at http://127.0.0.1:3000/
+- [n8n](https://github.com/n8n-io/n8n): visual workflow automation (http://127.0.0.1:5678)
+- Jupyter Lab: interactive Python/LLM notebooks (spawned with Ollama, http://127.0.0.1:8888)
+- Postgres: database for n8n and Open WebUI
+
+### Exposed Ports and Resources
+
+- http://127.0.0.1:3000: Open WebUI (chat interface)
+- http://127.0.0.1:11434: Ollama API (LLM backend)
+- http://127.0.0.1:8888: Ollama Jupyter Lab & built-in UI
+- http://127.0.0.1:5678: n8n automation interface
+
+### Main Project Images/Containers
+
+- ghcr.io/devil666face/ollama (cpu/nvidia/amd/intel, custom Ollama w/GPU backends)
+- ghcr.io/open-webui/open-webui (Open WebUI)
+- n8nio/n8n (n8n automation)
+- postgres:alpine (PostgreSQL)
+
+## Reference Projects
+
+- [Ollama](https://github.com/ollama/ollama)
+- [Open WebUI](https://github.com/open-webui/open-webui)
+- [n8n](https://github.com/n8n-io/n8n)
+- [Postgres](https://hub.docker.com/_/postgres)
+
+---
 
 ### Fix nvidia error for Ubuntu 22.04
 
