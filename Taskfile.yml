@@ -37,5 +37,5 @@ tasks:
     desc: remove containers
     silent: true
     cmds:
-      - docker rm --force ollama postgres n8n
+      - docker rm --force ollama postgres n8n open-webui
       - sudo rm -rf data

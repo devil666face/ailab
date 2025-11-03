@@ -3,9 +3,31 @@
 
 FROM intelanalytics/ipex-llm-inference-cpp-xpu:latest
 
-ENV PATH="/llm:${PATH}"
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8 \
+    TZ=UTC \
+    PATH="/llm:/root/.local/bin:/root/.venv/bin:${PATH}"
 
 RUN init-ollama
 
-ENTRYPOINT ["ollama"]
-CMD ["serve"]
+WORKDIR /root
+
+RUN apt-get update --quiet --quiet && \
+    apt-get install --quiet --quiet --yes \
+    curl \
+    && apt-get --quiet --quiet clean \
+    && rm --recursive --force /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+COPY pyproject.toml .
+COPY uv.lock .
+COPY .python-version .
+
+RUN uv sync --extra unsloth
+
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

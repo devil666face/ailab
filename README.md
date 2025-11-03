@@ -1,3 +1,5 @@
+http://127.0.0.1:3000/ - open-webui
+
 ### Fix nvidia error for Ubuntu 22.04
 
 ```bash

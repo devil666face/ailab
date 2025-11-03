@@ -4,6 +4,13 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "jupyterlab>=4.4.10",
+dependencies = ["jupyterlab>=4.4.10", "pip>=25.3"]
+
+[project.optional-dependencies]
+unsloth = [
+  "unsloth>=2025.11.1",
+  "trl>=0.23.0",
+  "peft>=0.17.1",
+  "accelerate>=1.11.0",
+  "bitsandbytes>=0.48.2",
 ]
