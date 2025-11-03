@@ -5,7 +5,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
     TZ=UTC \
-    PATH="/root/.local/bin:/.venv/bin:${PATH}"
+    PATH="/root/.local/bin:/root/.venv/bin:${PATH}"
+
+WORKDIR /root
 
 RUN apt-get update --quiet --quiet && \
     apt-get install --quiet --quiet --yes \
@@ -21,6 +23,6 @@ COPY .python-version .
 
 RUN uv sync
 
-COPY entrypoint.sh .
+COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

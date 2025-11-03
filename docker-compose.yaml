@@ -12,11 +12,13 @@ x-ollama: &ollama
     OLLAMA_MAX_LOADED_MODELS: 2
   volumes:
     - ./data/ollama:/root/.ollama
+    - ./data/files:/root/files
   networks:
     - ailab
   tty: true
   ports:
-    - 11434:11434/tcp
+    - 127.0.0.1:11434:11434/tcp
+    - 127.0.0.1:8888:8888/tcp
 
 services:
   postgres:
@@ -41,7 +43,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - 5678:5678/tcp
+      - 127.0.0.1:5678:5678/tcp
     environment:
       N8N_HOST: n8n.ailab.lan
       N8N_PORT: 5678
@@ -72,6 +74,21 @@ services:
       - postgres
     networks:
       - ailab
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: open-webui
+    volumes:
+      - ./data/open-webui:/app/backend/data
+    ports:
+      - 127.0.0.1:3000:8080
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - ailab
+    restart: unless-stopped
 
   ollama:
     profiles: ["cpu"]
