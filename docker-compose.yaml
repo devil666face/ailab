@@ -1,0 +1,128 @@
+x-ollama: &ollama
+  image: ghcr.io/devil666face/ollama:nvidia
+  build:
+    context: ollama/nvidia
+    dockerfile: Dockerfile
+  container_name: ollama
+  restart: unless-stopped
+  environment:
+    OLLAMA_CONTEXT_LENGTH: 8192
+    OLLAMA_FLASH_ATTENTION: 1
+    OLLAMA_KV_CACHE_TYPE: q8_0
+    OLLAMA_MAX_LOADED_MODELS: 2
+  volumes:
+    - ./data/ollama:/root/.ollama
+  networks:
+    - ailab
+  tty: true
+  ports:
+    - 11434:11434/tcp
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:18.0-alpine3.22
+    restart: unless-stopped
+    environment:
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/data/postgres
+    networks:
+      - ailab
+
+  n8n:
+    container_name: n8n
+    image: n8nio/n8n:latest
+    build:
+      context: n8n
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5678:5678/tcp
+    environment:
+      N8N_HOST: n8n.ailab.lan
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      NODE_ENV: production
+      WEBHOOK_URL: https://n8n.ailab.lan/
+      GENERIC_TIMEZONE: Europe/Moscow
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: admin
+      N8N_BASIC_AUTH_PASSWORD: Qwerty123
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+      N8N_DIAGNOSTICS_ENABLED: false
+      N8N_PERSONALIZATION_ENABLED: false
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      N8N_ENCRYPTION_KEY:
+      N8N_USER_MANAGEMENT_JWT_SECRET:
+      # N8N_ENCRYPTION_KEY: a60eea2398732dcf0ad7383c688a1d3d
+    volumes:
+      - ./data/n8n:/root/.n8n
+      - ./data/files:/files
+    depends_on:
+      - postgres
+    networks:
+      - ailab
+
+  ollama:
+    profiles: ["cpu"]
+    <<: *ollama
+
+  nvidia:
+    profiles: ["nvidia"]
+    <<: *ollama
+    build:
+      context: ollama/nvidia
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  amd:
+    profiles: ["amd"]
+    <<: *ollama
+    image: ghcr.io/devil666face/ollama:amd
+    build:
+      context: ollama/amd
+      dockerfile: Dockerfile
+    devices:
+      - "/dev/kfd"
+      - "/dev/dri"
+
+  intel:
+    profiles: ["intel"]
+    <<: *ollama
+    image: ghcr.io/devil666face/ollama:intel
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      no_proxy: localhost,127.0.0.1
+      OLLAMA_HOST: 0.0.0.0
+      DEVICE: Arc
+      OLLAMA_INTEL_GPU: true
+      OLLAMA_NUM_GPU: 999
+      ZES_ENABLE_SYSMAN: 1
+
+networks:
+  ailab:
+    name: ailab
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.name: br-ailab
