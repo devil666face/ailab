@@ -1,2 +1,5 @@
 .aider*
 /data
+ollama_nvidia.tar.gz
+ollama_amd.tar.gz
+ollama_intel.tar.gz

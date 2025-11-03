@@ -29,7 +29,28 @@ tasks:
             exit 1
             ;;
         esac
-      - docker compose --profile {{.profile}} up --build --force-recreate
+      - docker compose --profile {{.profile}} up
+
+  build:
+    desc: build docker compose
+    silent: true
+    cmds:
+      - docker compose --profile nvidia build
+      - docker compose --profile amd build
+      - docker compose --profile intel build
+
+  push:
+    desc: build and push docker compose
+    silent: true
+    deps:
+      - build
+    cmds:
+      - docker push ghcr.io/devil666face/ollama:nvidia
+      - docker push ghcr.io/devil666face/ollama:amd
+      - docker push ghcr.io/devil666face/ollama:intel
+      - docker save ghcr.io/devil666face/ollama:nvidia | gzip > ollama_nvidia.tar.gz
+      - docker save ghcr.io/devil666face/ollama:amd | gzip > ollama_amd.tar.gz
+      - docker save ghcr.io/devil666face/ollama:intel | gzip > ollama_intel.tar.gz
 
   prune:
     desc: remove containers
