@@ -55,14 +55,15 @@ services:
       N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
       N8N_DIAGNOSTICS_ENABLED: false
       N8N_PERSONALIZATION_ENABLED: false
-      DB_TYPE: postgresdb
+      N8N_RUNNERS_ENABLED: true
+      DB_TYPE: postgres
       DB_POSTGRESDB_HOST: postgres
       DB_POSTGRESDB_PORT: 5432
       DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
       DB_POSTGRESDB_USER: ${POSTGRES_USER}
       DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
-      N8N_ENCRYPTION_KEY:
-      N8N_USER_MANAGEMENT_JWT_SECRET:
+      # N8N_ENCRYPTION_KEY:
+      # N8N_USER_MANAGEMENT_JWT_SECRET:
       # N8N_ENCRYPTION_KEY: a60eea2398732dcf0ad7383c688a1d3d
     volumes:
       - ./data/n8n:/root/.n8n
@@ -74,14 +75,17 @@ services:
 
   ollama:
     profiles: ["cpu"]
+    build:
+      context: ollama
+      dockerfile: Dockerfile.nvidia
     <<: *ollama
 
   nvidia:
     profiles: ["nvidia"]
     <<: *ollama
     build:
-      context: ollama/nvidia
-      dockerfile: Dockerfile
+      context: ollama
+      dockerfile: Dockerfile.nvidia
     deploy:
       resources:
         reservations:
@@ -95,8 +99,8 @@ services:
     <<: *ollama
     image: ghcr.io/devil666face/ollama:amd
     build:
-      context: ollama/amd
-      dockerfile: Dockerfile
+      context: ollama
+      dockerfile: Dockerfile.amd
     devices:
       - "/dev/kfd"
       - "/dev/dri"
@@ -105,6 +109,9 @@ services:
     profiles: ["intel"]
     <<: *ollama
     image: ghcr.io/devil666face/ollama:intel
+    build:
+      context: ollama
+      dockerfile: Dockerfile.intel
     devices:
       - /dev/dri:/dev/dri
     environment:
