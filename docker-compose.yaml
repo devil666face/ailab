@@ -20,6 +20,8 @@ x-ollama: &ollama
       aliases:
         - ollama
         - jupiter
+        - ollama.ailab.lan
+        - jupiter.ailab.lan
   tty: true
   expose:
     - 80/tcp
@@ -34,7 +36,10 @@ services:
     image: ghcr.io/devil666face/gox:latest
     restart: unless-stopped
     networks:
-      - ailab
+      ailab:
+        aliases:
+          - proxy
+          - proxy.ailab.lan
     volumes:
       - ./proxy/config:/gox/config
     ports:
@@ -53,7 +58,10 @@ services:
     volumes:
       - ./data/postgres:/data/postgres
     networks:
-      - ailab
+      ailab:
+        aliases:
+          - postgres
+          - postgres.ailab.lan
 
   n8n:
     container_name: n8n
@@ -95,7 +103,10 @@ services:
     depends_on:
       - postgres
     networks:
-      - ailab
+      ailab:
+        aliases:
+          - n8n
+          - n8n.ailab.lan
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:latest
@@ -111,7 +122,10 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     networks:
-      - ailab
+      ailab:
+        aliases:
+          - open-webui
+          - open-webui.ailab.lan
     restart: unless-stopped
     deploy:
       resources:

@@ -16,11 +16,11 @@ ailab is a local open source AI stack. It features automation, local LLM inferen
 
 2. Open resouce:
 
-- http://open-webui Open WebUI (chat interface)
-- http://ollama:11434 (http://127.0.0.1:11434) - Ollama API (LLM backend)
-- http://ollama:8080 - Ollama shell for download models
-- http://jupiter/login?next=%2Flab%3F - Jupyter Lab
-- http://n8n/setup - n8n automation interface
+- http://open-webui.ailab.lan Open WebUI (chat interface)
+- http://ollama.ailab.lan:11434 (http://127.0.0.1:11434) - Ollama API (LLM backend)
+- http://ollama.ailab.lan:8080 - Ollama shell for download models
+- http://jupiter.ailab.lan/login?next=%2Flab%3F - Jupyter Lab
+- http://n8n.ailab.lan/setup - n8n automation interface
 
 ### Main Project Images/Containers
 
