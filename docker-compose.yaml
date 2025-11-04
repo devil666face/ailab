@@ -16,34 +16,66 @@ x-ollama: &ollama
     - ./data/ollama:/root/.ollama
     - ./data/files:/root/files
   networks:
-    ailab:
-      aliases:
-        - ollama
-        - jupiter
-        - ollama.ailab.lan
-        - jupiter.ailab.lan
+    - ailab
   tty: true
   expose:
     - 80/tcp
     - 11434/tcp
   ports:
     - 127.0.0.1:11434:11434/tcp
+  labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.jupiter.tls=true"
+    - "traefik.http.routers.jupiter.rule=Host(`jupiter.ailab.lan`)"
+    - "traefik.http.services.jupiter.loadbalancer.server.scheme=http"
+    - "traefik.http.services.jupiter.loadbalancer.server.port=80"
 
 services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    hostname: traefik.ailab.lan
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--serversTransport.insecureSkipVerify=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--entrypoints.http.http.redirections.entrypoint.to=https"
+      - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
+    expose:
+      - 80/tcp
+      - 443/tcp
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/dynamic:/etc/traefik/dynamic
+    networks:
+      ailab:
+        aliases:
+          - traefik
+          - ollama.ailab.lan
+          - shell.ailab.lan
+          - jupiter.ailab.lan
+          - n8n.ailab.lan
+          - open-webui.ailab.lan
+    restart: unless-stopped
+
   proxy:
     container_name: proxy
     hostname: proxy.ailab.lan
     image: ghcr.io/devil666face/gox:latest
     restart: unless-stopped
-    networks:
-      ailab:
-        aliases:
-          - proxy
-          - proxy.ailab.lan
     volumes:
       - ./proxy/config:/gox/config
     ports:
       - 0.0.0.0:1080:1080/tcp
+    networks:
+      - ailab
 
   postgres:
     container_name: postgres
@@ -103,10 +135,13 @@ services:
     depends_on:
       - postgres
     networks:
-      ailab:
-        aliases:
-          - n8n
-          - n8n.ailab.lan
+      - ailab
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.ailab.lan`)"
+      - "traefik.http.services.n8n.loadbalancer.server.scheme=http"
+      - "traefik.http.services.n8n.loadbalancer.server.port=80"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:latest
@@ -122,16 +157,19 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     networks:
-      ailab:
-        aliases:
-          - open-webui
-          - open-webui.ailab.lan
+      - ailab
     restart: unless-stopped
     deploy:
       resources:
         reservations:
           devices:
             - capabilities: ["gpu"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.open-webui.tls=true"
+      - "traefik.http.routers.open-webui.rule=Host(`open-webui.ailab.lan`)"
+      - "traefik.http.services.open-webui.loadbalancer.server.scheme=http"
+      - "traefik.http.services.open-webui.loadbalancer.server.port=80"
 
   ollama:
     profiles: ["cpu"]

@@ -56,5 +56,5 @@ tasks:
     desc: remove containers
     silent: true
     cmds:
-      - docker rm --force ollama postgres n8n open-webui
+      - docker rm --force ollama postgres n8n open-webui traefik proxy
       - sudo rm -rf data
