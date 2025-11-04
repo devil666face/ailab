@@ -1,0 +1,7 @@
+auth:
+socks:
+  enable: true
+  listen: 0.0.0.0:1080
+https:
+  enable: false
+  listen: 0.0.0.0:8443

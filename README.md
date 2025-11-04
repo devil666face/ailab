@@ -4,18 +4,23 @@ ailab is a local open source AI stack. It features automation, local LLM inferen
 
 ## Containers and Services
 
-- [Ollama](https://github.com/ollama/ollama): runs and manages LLMs (API: http://127.0.0.1:11434)
-- [Open WebUI](https://github.com/open-webui/open-webui): web interface for Ollama, available at http://127.0.0.1:3000/
-- [n8n](https://github.com/n8n-io/n8n): visual workflow automation (http://127.0.0.1:5678)
-- Jupyter Lab: interactive Python/LLM notebooks (spawned in Ollama container, http://127.0.0.1:8888)
+- [Ollama](https://github.com/ollama/ollama): runs and manages LLMs
+- [Open WebUI](https://github.com/open-webui/open-webui): web interface for Ollama
+- [n8n](https://github.com/n8n-io/n8n): visual workflow automation
+- Jupyter Lab: interactive Python/LLM notebooks
 - Postgres: database for n8n and Open WebUI
 
-### Exposed Ports and Resources
+### How to connect
 
-- http://127.0.0.1:3000: Open WebUI (chat interface)
-- http://127.0.0.1:11434: Ollama API (LLM backend)
-- http://127.0.0.1:8888: Jupyter Lab
-- http://127.0.0.1:5678: n8n automation interface
+1. Set proxy in browser to socks5h://127.0.0.1:1080 (dns proxy: enable)
+
+2. Open resouce:
+
+- http://open-webui Open WebUI (chat interface)
+- http://ollama:11434 (http://127.0.0.1:11434) - Ollama API (LLM backend)
+- http://ollama:8080 - Ollama shell for download models
+- http://jupiter/login?next=%2Flab%3F - Jupyter Lab
+- http://n8n/setup - n8n automation interface
 
 ### Main Project Images/Containers
 
