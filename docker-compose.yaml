@@ -23,12 +23,6 @@ x-ollama: &ollama
     - 11434/tcp
   ports:
     - 127.0.0.1:11434:11434/tcp
-  labels:
-    - "traefik.enable=true"
-    - "traefik.http.routers.jupiter.tls=true"
-    - "traefik.http.routers.jupiter.rule=Host(`jupiter.ailab.lan`)"
-    - "traefik.http.services.jupiter.loadbalancer.server.scheme=http"
-    - "traefik.http.services.jupiter.loadbalancer.server.port=80"
 
 services:
   traefik:
@@ -45,12 +39,9 @@ services:
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--entrypoints.http.http.redirections.entrypoint.to=https"
       - "--entrypoints.http.http.redirections.entrypoint.scheme=https"
-    expose:
-      - 80/tcp
-      - 443/tcp
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/dynamic:/etc/traefik/dynamic
@@ -64,18 +55,6 @@ services:
           - n8n.ailab.lan
           - open-webui.ailab.lan
     restart: unless-stopped
-
-  proxy:
-    container_name: proxy
-    hostname: proxy.ailab.lan
-    image: ghcr.io/devil666face/gox:latest
-    restart: unless-stopped
-    volumes:
-      - ./proxy/config:/gox/config
-    ports:
-      - 0.0.0.0:1080:1080/tcp
-    networks:
-      - ailab
 
   postgres:
     container_name: postgres
@@ -136,12 +115,6 @@ services:
       - postgres
     networks:
       - ailab
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.n8n.tls=true"
-      - "traefik.http.routers.n8n.rule=Host(`n8n.ailab.lan`)"
-      - "traefik.http.services.n8n.loadbalancer.server.scheme=http"
-      - "traefik.http.services.n8n.loadbalancer.server.port=80"
 
   open-webui:
     image: ghcr.io/open-webui/open-webui:latest
@@ -164,12 +137,6 @@ services:
         reservations:
           devices:
             - capabilities: ["gpu"]
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.open-webui.tls=true"
-      - "traefik.http.routers.open-webui.rule=Host(`open-webui.ailab.lan`)"
-      - "traefik.http.services.open-webui.loadbalancer.server.scheme=http"
-      - "traefik.http.services.open-webui.loadbalancer.server.port=80"
 
   ollama:
     profiles: ["cpu"]
@@ -219,6 +186,18 @@ services:
       OLLAMA_INTEL_GPU: true
       OLLAMA_NUM_GPU: 999
       ZES_ENABLE_SYSMAN: 1
+
+#   proxy:
+#     container_name: proxy
+#     hostname: proxy.ailab.lan
+#     image: ghcr.io/devil666face/gox:latest
+#     restart: unless-stopped
+#     volumes:
+#       - ./proxy/config:/gox/config
+#     ports:
+#       - 0.0.0.0:1080:1080/tcp
+#     networks:
+#       - ailab
 
 networks:
   ailab:

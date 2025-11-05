@@ -57,4 +57,4 @@ tasks:
     silent: true
     cmds:
       - docker rm --force ollama postgres n8n open-webui traefik proxy
-      - sudo rm -rf data
+      - sudo rm -rf data/files data/n8n data/open-webui data/postgres

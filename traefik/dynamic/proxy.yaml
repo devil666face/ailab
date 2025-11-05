@@ -1,0 +1,54 @@
+http:
+  routers:
+    shell:
+      rule: "Host(`shell.ailab.lan`)"
+      entryPoints:
+        - https
+      service: shell
+      tls: true
+    ollama:
+      rule: "Host(`ollama.ailab.lan`)"
+      entryPoints:
+        - https
+      service: ollama
+      tls: true
+    jupiter:
+      rule: "Host(`jupiter.ailab.lan`)"
+      entryPoints:
+        - https
+      service: jupiter
+      tls: true
+    n8n:
+      rule: "Host(`n8n.ailab.lan`)"
+      entryPoints:
+        - https
+      service: n8n
+      tls: true
+    open-webui:
+      rule: "Host(`open-webui.ailab.lan`)"
+      entryPoints:
+        - https
+      service: open-webui
+      tls: true
+
+  services:
+    shell:
+      loadBalancer:
+        servers:
+          - url: "http://ollama:8080"
+    ollama:
+      loadBalancer:
+        servers:
+          - url: "http://ollama:11434"
+    jupiter:
+      loadBalancer:
+        servers:
+          - url: "http://ollama:80"
+    n8n:
+      loadBalancer:
+        servers:
+          - url: "http://n8n:80"
+    open-webui:
+      loadBalancer:
+        servers:
+          - url: "http://open-webui:80"

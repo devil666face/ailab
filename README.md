@@ -12,12 +12,16 @@ ailab is a local open source AI stack. It features automation, local LLM inferen
 
 ### How to connect
 
-1. Set proxy in browser to socks5h://127.0.0.1:1080 (dns proxy: enable)
+```bash
+cat /etc/hosts
+```
 
-2. Open resouce:
+```ini
+127.0.1.1   shell.ailab.lan open-webui.ailab.lan ollama.ailab.lan jupiter.ailab.lan n8n.ailab.lan
+```
 
 - https://shell.ailab.lan - Ollama shell for download models
-- https://open-webui.ailab.lan Open WebUI (chat interface)
+- https://open-webui.ailab.lan - Open WebUI (chat interface)
 - https://ollama.ailab.lan (http://127.0.0.1:11434) - Ollama API (LLM backend)
 - https://jupiter.ailab.lan - Jupyter Lab
 - https://n8n.ailab.lan - n8n automation interface
